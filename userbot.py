@@ -1,5 +1,7 @@
+from re import T
 import time
 from telethon import events
+from telethon.errors.rpcerrorlist import PtsChangeEmptyError
 from config import client as client
 from FastTelethon import upload_file
 import os
@@ -18,7 +20,7 @@ class Timer:
 
 @client.on(events.NewMessage(outgoing=True, pattern=("\+help")))
 async def help_function(event):
-    await event.edit("Commands avilabe:-\n\n`+ping` - Just a confirmation that bot is working\n\n`+fwd :<username of channel>:<start_id>:<end_id>` - Forward a bunch of files without forwarded from tag\n\n`+edit :<username of group where corrected file is located>:<correct file message_id>` if you messed up sequence in channel (reply this command to the file you want to edit)\n\n`+purge :<start_id>:<end_id>`: Nothing complex here just deletes bunch of messages\n\n\n\n`+rename` :Instructions\nWrite the rename command and in place of number write OwO/UwU..... **Reply to the rename command** with `+rename:Start_id:End_id:ep number of first episode/chapter`\n\n`+sort :start_id:end_id` sorts messages in given range\n\n`+msgid` Gives message id\n\n\n*Note if channel/group you are working with is private in place of username put invite link starting from `joinchat/.....`")
+    await event.edit("Commands avilabe:-\n\n`+ping` - Just a confirmation that bot is working\n\n`+fwd :<username of channel>:<start_id>:<end_id>` - Forward a bunch of files without forwarded from tag\n\n`+edit :<username of group where corrected file is located>:<correct file message_id>` if you messed up sequence in channel (reply this command to the file you want to edit)\n\n`+purge :<start_id>:<end_id>`: Nothing complex here just deletes bunch of messages\n\n\n\n`+rename` :Instructions\nWrite the rename command and in place of number write OwO/UwU..... **Reply to the rename command** with `+rename:Start_id:End_id:ep number of first episode/chapter`\n\n`+sort :start_id:end_id` sorts messages in given range\n\n`+msgid` Gives message id\n\n`+kang {url} | name of file, reply to thumbnail (url upload)\n\n\n*Note if channel/group you are working with is private in place of username put invite link starting from `joinchat/.....`")
 
 @client.on(events.NewMessage(outgoing=True, pattern=("\+ping")))
 async def hi_function(event):
@@ -131,22 +133,27 @@ async def sites(event):
 
 @client.on(events.NewMessage(outgoing=True, pattern=("\+kang")))
 async def kang(event): 
+    try:
+        x = await event.get_reply_message()
+        thumb = await client.download_media(x.photo)
+    except:
+        thumb = None
+
     split = event.raw_text[6:]
-    print(split)
     reply = await event.reply("Downloading")
     for_name = split.split("|")
     url = for_name[0]
     url = url.replace(' ','')
-    print(for_name)
     try:
         name = for_name[1]
     except:
         name = url.split("/")[-1]
     await downloader.DownLoadFile(url, 1024*10, reply, file_name=name)
-    await Upload(event,reply, name)
+    await Upload(event,reply, name, thumb)
     os.remove(name)
+    os.remove(thumb)
 
-async def Upload(event,reply, out):
+async def Upload(event,reply, out, thumbnail):
     timer = Timer()
     async def progress_bar(downloaded_bytes, total_bytes):
         if timer.can_send():
@@ -159,7 +166,11 @@ async def Upload(event,reply, out):
                 name=out,
                 progress_callback= progress_bar
             )
-    await client.send_message(event.chat_id, file=ok, force_document=True)
+    await client.send_message(
+        event.chat_id, file=ok, 
+        force_document=True, 
+        thumb=thumbnail
+    )   
 
 def human_readable_size(size, decimal_places=2):
     for unit in ['B', 'KB', 'MB', 'GB', 'TB', 'PB']:
@@ -167,8 +178,6 @@ def human_readable_size(size, decimal_places=2):
             break
         size /= 1024.0
     return f"{size:.{decimal_places}f} {unit}"
-
-
 
 client.start()
 
