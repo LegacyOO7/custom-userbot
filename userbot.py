@@ -28,15 +28,15 @@ genres_template = {
 }
 
 template_main = '''**{title} ({year}) • TVSeries**
-__{duration}min__ ⭐️**{score}** [Anilist]({link})
+__{duration}min__ 🌟**{score}** [Anilist]({link})
 
-Genres: {genres_str}
+🎭Genres: __{genres_str}__
 
-@AnimeSeriesLovers
+**@AnimeSeriesLovers**
 
 📌 720p {audiostatus}
 
-Download Link - [{link_title}]({channel_link})
+**Download Link** - [{link_title}]({channel_link})
 '''
 
 template_desc = '''**{title} ({year}) • TVSeries**
