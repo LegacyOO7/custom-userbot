@@ -32,11 +32,11 @@ __{duration}min__ ⭐️**{score}** [Anilist]({link})
 
 Genres: {genres_str}
 
-@Anime_Gallery
+@AnimeSeriesLovers
 
 📌 720p {audiostatus}
 
-Link - [{link_title}]({channel_link})
+Download Link - [{link_title}]({channel_link})
 '''
 
 template_desc = '''**{title} ({year}) • TVSeries**
